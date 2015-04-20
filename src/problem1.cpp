@@ -101,6 +101,8 @@ int main(int argc, char* argv[]) {
 	const int INFEASIBLE_GAMEPLAY_STATUS 	= 1;
 	const int NONLINEAR_GAMEPLAY_STATUS 	= 2;
 
+	bool debug_mode 						= false;
+
 	std::vector<Case> userInput;
 	std::vector<std::string> userInputStatus;
 
@@ -111,6 +113,8 @@ int main(int argc, char* argv[]) {
 		std::cout << "Populating user input with test values..." << std::endl;
 
 		// fill user input with one test case
+		// and enable debug mode
+		debug_mode = true;
 
 		// Test case 1
 		// define test case parameters as first item in array
@@ -173,7 +177,57 @@ int main(int argc, char* argv[]) {
 	} else {
 
 		// load user input through the standard input
-		std::cout << "no arguments have been passed." << std::endl;
+
+		bool gatherInput 		= true;
+
+		int inputIndex 			= 0;
+		int input1 				= 0;
+		int input2 				= 0;
+
+		Case currentCase;
+
+		while(gatherInput) {
+
+			std::cin >> input1;
+			std::cin >> input2;
+
+			// determine if end of input by searching for
+			// zeroes in both inputs
+			if(input1 == 0 && input2 == 0) {
+				std::cout << "Terminating sequence" << std::endl;
+				break;
+			} else if(inputIndex == 0) {
+				currentCase.itemAmount 			= input1;
+				currentCase.relationshipAmount 	= input2;
+			} else {
+
+				currentCase.performingItem.push_back(input1);
+				currentCase.unlocksItem.push_back(input2);
+
+				// determine if end of case by counting the amount of
+				// items declared for the current case
+				if(inputIndex >= currentCase.relationshipAmount) {
+
+					// reset index, start a new case
+					inputIndex = -1;
+
+					// save case
+					userInput.push_back(currentCase);
+
+					// reset case
+					currentCase.itemAmount 			= 0;
+					currentCase.relationshipAmount 	= 0;
+					currentCase.performingItem.clear();
+					currentCase.unlocksItem.clear();
+
+				}
+
+			}
+
+			inputIndex++;
+		}
+
+		// std::cout << "You have entered " << userInput.size() << " test cases" << std::endl;
 	}
 
 	// loop through our user input cases
@@ -216,11 +270,24 @@ int main(int argc, char* argv[]) {
 
 	}
 
-	std::cout << std::endl << "---------- User Case results ----------" << std::endl;
+	std::string testResultIndex = "";
 
-	// output user case gameplay statuses
-	for(int i = 0; i < userInputStatus.size(); i++) {
-		std::cout << i + 1 << ") " << userInputStatus.at(i) << std::endl;
+	if(debug_mode) {
+
+		std::cout << std::endl << "---------- User Case results ----------" << std::endl;
+
+		// output test user case gameplay statuses
+		for(int i = 0; i < userInputStatus.size(); i++) {
+			std::cout << testResultIndex << userInputStatus.at(i) << std::endl;
+		}
+
+	} else {
+
+		// output standard user case gameplay statuses
+		for(int i = 0; i < userInputStatus.size(); i++) {
+			std::cout << userInputStatus.at(i) << std::endl;
+		}
+
 	}
 
 	return 0;
