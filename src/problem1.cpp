@@ -194,7 +194,6 @@ int main(int argc, char* argv[]) {
 			// determine if end of input by searching for
 			// zeroes in both inputs
 			if(input1 == 0 && input2 == 0) {
-				std::cout << "Terminating sequence" << std::endl;
 				break;
 			} else if(inputIndex == 0) {
 				currentCase.itemAmount 			= input1;
@@ -227,7 +226,6 @@ int main(int argc, char* argv[]) {
 			inputIndex++;
 		}
 
-		// std::cout << "You have entered " << userInput.size() << " test cases" << std::endl;
 	}
 
 	// loop through our user input cases
@@ -278,7 +276,7 @@ int main(int argc, char* argv[]) {
 
 		// output test user case gameplay statuses
 		for(int i = 0; i < userInputStatus.size(); i++) {
-			std::cout << testResultIndex << userInputStatus.at(i) << std::endl;
+			std::cout << i + 1 << ") " << userInputStatus.at(i) << std::endl;
 		}
 
 	} else {
