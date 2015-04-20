@@ -8,7 +8,7 @@
  * program. 
  *
  * This program determines, and outputs, from the passed inputs whether the 
- * 'gameplay' simulated represents an "Infeasible Game" if the proposed gameplay 
+ * 'gameplay' simulated represents an "Unfeasible Game" if the proposed gameplay 
  * sequences are impossible, "Linear Gameplay" if exactly one sequence is possible, or 
  * "Nonlinear gameplay possible" if multiple arrangements are possible.
  *
@@ -26,6 +26,10 @@ struct Case {
 	// relationships = number of relationships between cases
 	int itemAmount;
 	int relationshipAmount;
+
+	// used for comparing test-case results
+	std::string expects;
+	std::string actual;
 
 	std::vector<int> performingItem;
 	std::vector<int> unlocksItem;
@@ -93,12 +97,12 @@ bool causeOrEffectExists(int cause, int effect, std::vector<int>& causes, std::v
 int main(int argc, char* argv[]) {
 
 	// define output constants
-	const std::string INFEASIBLE_GAMEPLAY 	= "Infeasible game";
+	const std::string UNFEASIBLE_GAMEPLAY 	= "Unfeasible game";
 	const std::string LINEAR_GAMEPLAY 		= "Linear gameplay";
 	const std::string NONLINEAR_GAMEPLAY 	= "Nonlinear gameplay possible";
 
 	const int LINEAR_GAMEPLAY_STATUS 		= 0;
-	const int INFEASIBLE_GAMEPLAY_STATUS 	= 1;
+	const int UNFEASIBLE_GAMEPLAY_STATUS 	= 1;
 	const int NONLINEAR_GAMEPLAY_STATUS 	= 2;
 
 	bool debug_mode 						= false;
@@ -121,6 +125,7 @@ int main(int argc, char* argv[]) {
 		Case case1;
 		case1.itemAmount = 5;
 		case1.relationshipAmount = 4;
+		case1.expects = NONLINEAR_GAMEPLAY;
 		
 		// define test case data
 		case1.performingItem.push_back(1);
@@ -142,6 +147,7 @@ int main(int argc, char* argv[]) {
 		Case case2;
 		case2.itemAmount = 5;
 		case2.relationshipAmount = 4;
+		case2.expects = LINEAR_GAMEPLAY;
 		
 		// define test case data
 		case2.performingItem.push_back(3);
@@ -163,6 +169,7 @@ int main(int argc, char* argv[]) {
 		Case case3;
 		case3.itemAmount = 2;
 		case3.relationshipAmount = 2;
+		case3.expects = UNFEASIBLE_GAMEPLAY;
 		
 		// define test case data
 		case3.performingItem.push_back(1);
@@ -173,6 +180,60 @@ int main(int argc, char* argv[]) {
 
 		// save test case
 		userInput.push_back(case3);
+
+		// Test case 4 (from David's email)
+		Case case4;
+		case4.itemAmount = 4;
+		case4.relationshipAmount = 2;
+		case4.expects = NONLINEAR_GAMEPLAY;
+		
+		// define test case data
+		case4.performingItem.push_back(1);
+		case4.unlocksItem.push_back(3);
+
+		case4.performingItem.push_back(2);
+		case4.unlocksItem.push_back(4);
+
+		// save test case
+		userInput.push_back(case4);
+
+		// Test case 5 (from David's email)
+		Case case5;
+		case5.itemAmount = 3;
+		case5.relationshipAmount = 3;
+		case5.expects = UNFEASIBLE_GAMEPLAY;
+		
+		// define test case data
+		case5.performingItem.push_back(1);
+		case5.unlocksItem.push_back(3);
+
+		case5.performingItem.push_back(3);
+		case5.unlocksItem.push_back(1);
+
+		case5.performingItem.push_back(3);
+		case5.unlocksItem.push_back(2);
+
+		// save test case
+		userInput.push_back(case5);
+
+		// Test case 6 (by Juan Vallejo)
+		Case case6;
+		case6.itemAmount = 3;
+		case6.relationshipAmount = 3;
+		case6.expects = UNFEASIBLE_GAMEPLAY;
+		
+		// define test case data
+		case6.performingItem.push_back(1);
+		case6.unlocksItem.push_back(3);
+
+		case6.performingItem.push_back(3);
+		case6.unlocksItem.push_back(2);
+
+		case6.performingItem.push_back(3);
+		case6.unlocksItem.push_back(1);
+
+		// save test case
+		userInput.push_back(case6);
 
 	} else {
 
@@ -245,13 +306,13 @@ int main(int argc, char* argv[]) {
 			int effect 	= userInput.at(userCase).unlocksItem.at(userCaseAction);
 
 			// determine if there are actions unlocked / performed
-			// if the current cause is found in the list of effects, declare gameplay as infeasible
+			// if the current cause is found in the list of effects, declare gameplay as unfeasible
 			if(causes.size() > 0 && effects.size() > 0) {
 
 				gamePlayStatus = getGameplayStatus(cause, effect, causes, effects);
 
-				if(gamePlayStatus == INFEASIBLE_GAMEPLAY_STATUS) {
-					status = INFEASIBLE_GAMEPLAY;
+				if(gamePlayStatus == UNFEASIBLE_GAMEPLAY_STATUS) {
+					status = UNFEASIBLE_GAMEPLAY;
 					break;
 				} else if(gamePlayStatus == NONLINEAR_GAMEPLAY_STATUS) {
 					status = NONLINEAR_GAMEPLAY;
@@ -264,6 +325,7 @@ int main(int argc, char* argv[]) {
 			effects.push_back(effect);
 		}
 
+		userInput.at(userCase).actual = status;
 		userInputStatus.push_back(status);
 
 	}
@@ -272,12 +334,30 @@ int main(int argc, char* argv[]) {
 
 	if(debug_mode) {
 
-		std::cout << std::endl << "---------- User Case results ----------" << std::endl;
+		std::cout << std::endl << "---------- User Case results ----------" << std::endl << std::endl;
+
+		int total_passed = 0;
+		int total_failed = 0;
 
 		// output test user case gameplay statuses
 		for(int i = 0; i < userInputStatus.size(); i++) {
-			std::cout << i + 1 << ") " << userInputStatus.at(i) << std::endl;
+
+			std::cout << i + 1 << ") ";
+
+			if(userInput.at(i).expects.compare(userInput.at(i).actual) == 0) {
+				std::cout << "Passed." << std::endl;
+				total_passed++;
+			} else {
+				std::cout << "Failed." << std::endl;
+				total_failed++;
+			}
+
+			std::cout << "Expected: " << userInput.at(i).expects << std::endl;
+			std::cout << "Actual: " << userInput.at(i).actual << std::endl << std::endl;
 		}
+
+		std::cout << std::endl << "Total passed: " << total_passed << std::endl;
+		std::cout << "Total failed: " << total_failed << std::endl;
 
 	} else {
 
