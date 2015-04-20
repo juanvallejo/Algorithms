@@ -97,9 +97,9 @@ int main(int argc, char* argv[]) {
 	const std::string LINEAR_GAMEPLAY 		= "Linear gameplay";
 	const std::string NONLINEAR_GAMEPLAY 	= "Nonlinear gameplay possible";
 
-	const std::string LINEAR_GAMEPLAY_STATUS 		= 0;
-	const std::string INFEASIBLE_GAMEPLAY_STATUS 	= 1;
-	const std::string NONLINEAR_GAMEPLAY_STATUS 	= 2;
+	const int LINEAR_GAMEPLAY_STATUS 		= 0;
+	const int INFEASIBLE_GAMEPLAY_STATUS 	= 1;
+	const int NONLINEAR_GAMEPLAY_STATUS 	= 2;
 
 	std::vector<Case> userInput;
 	std::vector<std::string> userInputStatus;
@@ -179,10 +179,9 @@ int main(int argc, char* argv[]) {
 	// loop through our user input cases
 	for(int userCase = 0; userCase < userInput.size(); userCase++) {
 
-		std::cout << "---------- User case " << userCase + 1 << " ----------" << std::endl;
-
 		// status of gameplay based on user case parameters
 		std::string status = LINEAR_GAMEPLAY;
+		int gamePlayStatus = LINEAR_GAMEPLAY_STATUS;
 
 		// declare user case vars
 		std::vector<int> causes;
@@ -197,16 +196,12 @@ int main(int argc, char* argv[]) {
 			// if the current cause is found in the list of effects, declare gameplay as infeasible
 			if(causes.size() > 0 && effects.size() > 0) {
 
-				int gamePlayStatus = getGameplayStatus(cause, effect, causes, effects);
-if(gamePlayStatus == INFEASIBLE_GAMEPLAY_STATUS) {
-	std::cout << "Warning: Cause found as previously declared effect for user case "  << userCase + 1 << std::endl;
-} else if(gamePlayStatus == NONLINEAR_GAMEPLAY_STATUS) {
-	std::cout << "Warning: Nonlinear gameplay detected for test case " << userCase + 1 << std::endl;
-}
-				if(causeEqualsEffect(cause, effect, causes, effects)) {
+				gamePlayStatus = getGameplayStatus(cause, effect, causes, effects);
+
+				if(gamePlayStatus == INFEASIBLE_GAMEPLAY_STATUS) {
 					status = INFEASIBLE_GAMEPLAY;
 					break;
-				} else if(causeOrEffectExists(cause, effect, causes, effects)) {
+				} else if(gamePlayStatus == NONLINEAR_GAMEPLAY_STATUS) {
 					status = NONLINEAR_GAMEPLAY;
 					break;
 				}
@@ -221,7 +216,7 @@ if(gamePlayStatus == INFEASIBLE_GAMEPLAY_STATUS) {
 
 	}
 
-	std::cout << "---------- User Case results ----------" << std::endl;
+	std::cout << std::endl << "---------- User Case results ----------" << std::endl;
 
 	// output user case gameplay statuses
 	for(int i = 0; i < userInputStatus.size(); i++) {
