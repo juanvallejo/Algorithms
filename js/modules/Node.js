@@ -14,6 +14,25 @@ function Node(value) {
 	this.visited 	= false;
 	this.children 	= [];
 	this.parent 	= null;
+
+	/**
+	 * Receives a node value and determines if
+	 * such a node exists among the node's children.
+	 */
+	this.containsChild = function(childValue) {
+		
+		var childExists = false;
+
+		for(var i = 0; i < this.children.length; i++) {
+			if(childValue == this.children[i].value) {
+				childExists = true;
+				break;
+			}
+		}
+
+		return childExists;
+
+	}
 }
 
 module.exports = Node;

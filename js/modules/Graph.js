@@ -5,6 +5,7 @@
  */
 
 var Node = require('./Node.js');
+var Edge = require('./Edge.js');
 
 /**
  * Graph for storing nodes. Allows computation
@@ -40,6 +41,11 @@ function Graph() {
 	// holds every node in the graph by value
 	this.nodes 		= {};
 
+	// holds all edges connecting a pair of nodes
+	// in the graph. Stored by key: nodeA value + 
+	// nodeB value
+	this.edges 		= {};
+
 	/**
 	 * Takes two node values as input. Makes second node
 	 * child node of first node. Used for creating node
@@ -71,7 +77,9 @@ function Graph() {
 		}
 	
 		// link child node to parent
-		this.nodes[parentValue].children.push(this.nodes[childValue]);
+		if(!this.nodes[parentValue].containsChild(childValue)) {
+			this.nodes[parentValue].children.push(this.nodes[childValue]);
+		}
 
 	}
 
@@ -115,6 +123,50 @@ function Graph() {
 	}
 
 	/**
+	 * Adds a new (strong) edge, if one connecting two nodes does
+	 * not already exist. If a node passed does not exist,
+	 * it it is created on the spot and added.
+	 * Note: Bidirectional relationships between the two nodes provided will be
+	 * created. This means nodeB will become the child of nodeA, as
+	 * that's what an edge describes.
+	 * Warning: Strong edges WILL make the graph cyclic.
+	 * @param nodeAValue is the value of the parent node
+	 * @param nodeAValue is the value of the parent node
+	 * @param edgeLength is the distance (in km) of this edge
+	 * @param type tells whether edge is a backroad 'b', or autobahn 'a'
+	 * segment.
+	 */
+	this.addEdge = function(nodeAValue, nodeBValue, edgeLength, type) {
+
+		// make sure nodes with given values exist
+		this.nodes[nodeAValue] = this.nodes[nodeAValue] || new Node(nodeAValue);
+		this.nodes[nodeBValue] = this.nodes[nodeBValue] || new Node(nodeBValue);
+
+		// create the edge if it doesn't already exist
+		this.edges[nodeAValue + nodeBValue] = this.edges[nodeAValue + nodeBValue] || new Edge(this.nodes[nodeAValue], this.nodes[nodeBValue], edgeLength, type);
+
+		// create a strong relationship between the two given nodes
+		// if one doesn't already exist.
+		if(!this.nodes[nodeAValue].containsChild(nodeBValue)) {
+			this.nodes[nodeAValue].children.push(this.nodes[nodeBValue]);
+		}
+
+		if(!this.nodes[nodeBValue].containsChild(nodeAValue)) {
+			this.nodes[nodeBValue].children.push(this.nodes[nodeAValue]);
+		}
+
+	}
+
+	/**
+	 * Returns a stored edge based on the two
+	 * nodes it holds. Only node values should
+	 * be provided as the only two parameters.
+	 */
+	this.getEdge = function(nodeAValue, nodeBValue) {
+		return this.edges[nodeAValue + nodeBValue];
+	}
+
+	/**
 	 * Return a pointer to a node according
 	 * to its value
 	 */
@@ -135,6 +187,15 @@ function Graph() {
 		}
 
 		return nodeValues;
+
+	}
+
+	/**
+	 * Gets the route that takes shortest time
+	 * between two nodes. Only node values should
+	 * be specified.
+	 */
+	this.getFastestRoute = function(nodeAValue, nodeBValue) {
 
 	}
 
@@ -217,6 +278,32 @@ function Graph() {
 	 */
 	this.setEdgeLength = function(length) {
 		this.edgeLength = length;
+	}
+
+	/**
+	 * Returns the total number of edges that
+	 * have been set.
+	 * Warning: value must be manually set first.
+	 */
+	this.getEdgeLength = function() {
+		return this.edgeLength;
+	}
+
+	/**
+	 * Returns a string containing an edge's
+	 * nodes, its length, and its type, for every
+	 * edge that has been created.
+	 */
+	this.getEdgeData = function() {
+
+		var edgeData = "";
+
+		for(var i in this.edges) {
+			edgeData += this.edges[i].nodeA.value + ' -> ' + this.edges[i].nodeB.value + ', ' + this.edges[i].length + 'km. [' + this.edges[i].type + ']\n'; 
+		}
+
+		return edgeData;
+
 	}
 
 	/**
