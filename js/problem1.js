@@ -1,146 +1,28 @@
 /**
- * Implementation of solution for problem 1 in algorithms
- * final project. Uses depth-first search
+ * Revision of problem one "Who's Got Game" of the list of CPSC 420 
+ * Algorithms Competition problems. Uses depth-first search to look 
+ * for cycles in a graph.
+ *
+ * Receives an initial input of `n` amount of items or tasks to perform with `m` amount
+ * of relationships between such items or tasks. Every input after such initial input
+ * (m n) consists of the performance of action or collection of item `d` which allows
+ * access to an item or action `u`. An input consisting of two zeroes (0 0) will end the
+ * program. 
+ *
+ * This program determines, and outputs, from the passed inputs whether the 
+ * 'gameplay' simulated represents an "Unfeasible Game" if the proposed gameplay 
+ * sequences are impossible, "Linear Gameplay" if exactly one sequence is possible, or 
+ * "Nonlinear gameplay possible" if multiple arrangements are possible.
+ *
+ * Note: This is a revised implementation using nodes to represent points
  *
  * @author juanvallejo
  * @date 4/23/15
  */
 
-var Settings = {
-	debug_log: false
-};
-
-/**
- * Our node
- */
-function Node(value) {
-
-	this.value 		= value;
-	this.visited 	= false;
-	this.children 	= [];
-	this.parent 	= null;
-}
-
-function log(text) {
-	if(Settings.debug_log) {
-		console.log(text);
-	}
-}
-
-/**
- * Our graph will hold all of our nodes
- */
-function Graph() {
-
-	this.root 		= null;
-	this.nodes 		= {};
-	this.length 	= 0;
-	this.traversed 	= 0;		// amount of nodes traversed
-
-	/**
-	 * Takes two node values as input. Makes second node
-	 * child node of first node.
-	 * @param nodeA is the parent node
-	 * @param nodeB is child node
-	 */
-	this.addNodes = function(parentValue, childValue) {
-
-		if(!this.nodes[parentValue]) {
-			this.length++;
-		}
-
-		if(!this.nodes[childValue]) {
-			this.length++;
-		}
-
-		// make sure nodes exist
-		this.nodes[parentValue] 	= this.nodes[parentValue] || new Node(parentValue);
-		this.nodes[childValue]	 	= this.nodes[childValue] || new Node(childValue);
-
-		// add root
-		if(!this.root) {
-			this.root = this.nodes[parentValue];
-		}
-	
-		// link child node to parent
-		this.nodes[parentValue].children.push(this.nodes[childValue]);
-
-	}
-
-	/**
-	 * Return a pointer to a node according
-	 * to its value
-	 */
-	this.getNode = function(nodeValue) {
-		return this.nodes[nodeValue];
-	}
-
-	/**
-	 * Iterates through all nodes, and
-	 * looks to see if any of the 'parents'
-	 * contain children linking back to it
-	 */
-	this.hasCycles = function() {
-		return this._hasCycles(this.root);
-	}
-
-	/**
-	 * A graph will only be linear if all nodes are 'directly'.
-	 * connected. If this is not the case, all nodes will not
-	 * be traversed.
-	 */
-	this.isLinear = function() {
-		return this.length == this.traversed;
-	}
-
-	/**
-	 * Recursive private method. Uses depth-first
-	 * search to hit every connected node in a graph
-	 * to determine if cycles are present. Stack-based.
-	 */
-	this._hasCycles = function(node) {
-
-		// this case is hit when main iterator
-		// (this.hasCycles) cycles through a stack node
-		// that has already been visited by a child from
-		// a previous iterated root
-		if(node.visited) {
-			return false;
-		}
-		
-		log('Now looking at node ' + node.value + ' -> ' + node.children.length + ' children');
-		this.traversed++;
-
-		node.visited = true;
-
-		// we've hit the end of our list
-		if(!node.children.length) {
-			return false;
-		}
-
-		var isCyclic = false;
-
-		// determine if node has children
-		for(var i = 0; i < node.children.length; i++) {
-			if(!node.children[i].visited) {
-				isCyclic =  this._hasCycles(node.children[i]);
-			} else {
-				isCyclic = true;
-			}
-		}
-
-		return isCyclic;
-	}
-
-	/**
-	 * Returns the current size
-	 * of our graph
-	 */
-	this.size = function() {
-		return this.length;
-	}
-
-}
+// import dependencies
+var Node = require('./modules/Node.js');
+var Graph = require('./modules/Graph.js');
 
 /**
  * Define our main function

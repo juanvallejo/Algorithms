@@ -74,7 +74,7 @@ void log(std::string text) {
 
 /**
  * Get the index of a stored Node from its value. If the node
- * doesn't exist, -1 is returned. Fuck the police. Yeah.
+ * doesn't exist, -1 is returned.
  */
 int getNodeIndex(std::vector<Node*>& nodes, int nodeValue) {
 
