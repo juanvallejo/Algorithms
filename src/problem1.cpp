@@ -1,5 +1,4 @@
 /**
- *
  * Problem one "Who's Got Game" of the list of CPSC 420 Algorithms Competition problems.
  * Receives an initial input of `n` amount of items or tasks to perform with `m` amount
  * of relationships between such items or tasks. Every input after such initial input
@@ -208,10 +207,10 @@ int main(int argc, char* argv[]) {
 		case5.unlocksItem.push_back(3);
 
 		case5.performingItem.push_back(3);
-		case5.unlocksItem.push_back(1);
+		case5.unlocksItem.push_back(2);
 
 		case5.performingItem.push_back(3);
-		case5.unlocksItem.push_back(2);
+		case5.unlocksItem.push_back(1);
 
 		// save test case
 		userInput.push_back(case5);
