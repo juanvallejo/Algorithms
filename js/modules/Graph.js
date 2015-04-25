@@ -196,10 +196,7 @@ function Graph() {
 	 * be specified.
 	 */
 	this.getFastestRoute = function(nodeAValue, nodeBValue) {
-
-		// our starting location is at nodeA
-		this._getFastestRoute(this.nodes[nodeAValue], this.nodes[nodeBValue]);
-
+		return this._getFastestRoute(this.nodes[nodeAValue], this.nodes[nodeBValue]);
 	}
 
 	/**
@@ -224,6 +221,8 @@ function Graph() {
 
 		if(node.value == destination.value) {
 			console.log('found this motherfucker');
+			console.log('route');
+			console.log(route);
 			return true;
 		}
 
@@ -234,10 +233,17 @@ function Graph() {
 
 		// loop through all of our node's children
 		// and update each node value accordingly
+		// we also use this loop to calculate distances.
 		for(var i = 0; i < node.children.length; i++) {
+			
 			if(node.children[i].rootDistance == null || node.rootDistance + this.getEdge(node.value, node.children[i].value).length < node.children[i].rootDistance) {
 				node.children[i].rootDistance = node.rootDistance + this.getEdge(node.value, node.children[i].value).length;
 			}
+
+			if(!node.children[i].visited) {
+				route.push(this.getEdge(node.value, node.children[i].value));
+			}
+
 		}
 
 		// visit each of the node's children
@@ -245,7 +251,11 @@ function Graph() {
 		for(var i = 0; i < node.children.length; i++) {
 			if(!node.children[i].visited) {
 				console.log(node.value + ' -> ' + node.children[i].value + ' -> ' + this.getEdge(node.value, node.children[i].value).length + ' -- ' + node.children[i].rootDistance);
-				return this._getFastestRoute(node.children[i], destination, route);
+				if(!this._getFastestRoute(node.children[i], destination, route)) {
+					return false;
+				} else {
+					return true;
+				}
 			}
 		}
 
