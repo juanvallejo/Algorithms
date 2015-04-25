@@ -163,7 +163,7 @@ function Graph() {
 	 * be provided as the only two parameters.
 	 */
 	this.getEdge = function(nodeAValue, nodeBValue) {
-		return this.edges[nodeAValue + nodeBValue];
+		return this.edges[nodeAValue + nodeBValue] || this.edges[nodeBValue + nodeAValue];
 	}
 
 	/**
@@ -196,6 +196,60 @@ function Graph() {
 	 * be specified.
 	 */
 	this.getFastestRoute = function(nodeAValue, nodeBValue) {
+
+		// our starting location is at nodeA
+		this._getFastestRoute(this.nodes[nodeAValue], this.nodes[nodeBValue]);
+
+	}
+
+	/**
+	 * Recursive method for fastest route. Used for
+	 * traversing all of a node's children. Destination
+	 * holds the node we are looking to get to.
+	 * Route is an edge array containing a series of
+	 * edges that define the fastest path.
+	 */
+	this._getFastestRoute = function(node, destination, route) {
+
+		// initialize the array that
+		// will hold our edges
+		if(!route) {
+			route = [];
+		}
+
+		// mark node as visited
+		node.visited = true;
+
+		console.log('Visiting node ' + node.value);
+
+		if(node.value == destination.value) {
+			console.log('found this motherfucker');
+			return true;
+		}
+
+		// set the initial node's rootDistance
+		if(node.rootDistance == null) {
+			node.rootDistance = 0;
+		}
+
+		// loop through all of our node's children
+		// and update each node value accordingly
+		for(var i = 0; i < node.children.length; i++) {
+			if(node.children[i].rootDistance == null || node.rootDistance + this.getEdge(node.value, node.children[i].value).length < node.children[i].rootDistance) {
+				node.children[i].rootDistance = node.rootDistance + this.getEdge(node.value, node.children[i].value).length;
+			}
+		}
+
+		// visit each of the node's children
+		// right now they are visited in order
+		for(var i = 0; i < node.children.length; i++) {
+			if(!node.children[i].visited) {
+				console.log(node.value + ' -> ' + node.children[i].value + ' -> ' + this.getEdge(node.value, node.children[i].value).length + ' -- ' + node.children[i].rootDistance);
+				return this._getFastestRoute(node.children[i], destination, route);
+			}
+		}
+
+		return false;
 
 	}
 

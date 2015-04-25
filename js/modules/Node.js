@@ -10,10 +10,22 @@
  */
 function Node(value) {
 
+	// holds our main node value
+	// used for comparing and sorting
 	this.value 		= value;
+	
+	// indicates whether this node has been
+	// traversed by a graph function.
 	this.visited 	= false;
+
+	// all of the nodes this node links to.
 	this.children 	= [];
 	this.parent 	= null;
+
+	// defines the total distance
+	// to this node from a root
+	// node. Null value -> infinity
+	this.rootDistance = null;
 
 	/**
 	 * Receives a node value and determines if

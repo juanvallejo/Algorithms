@@ -45,24 +45,47 @@ var Graph = require('./modules/Graph.js');
 	// define our main graph
 	var graph1 = new Graph();
 	graph1.setLength(6);
-	graph1.addAllNodes(['A', 'B', 'C', 'D', 'E', 'F']);
+	graph1.addAllNodes(['A', 'B', 'C', 'D', 'E', 'F', 'G']);
 	graph1.setEdgeLength(7);
+	// graph1.addEdge('A', 'B', 10, 'a');
+	// graph1.addEdge('B', 'C', 10, 'a');
+	// graph1.addEdge('D', 'A', 1, 'b');
+	// graph1.addEdge('E', 'B', 5, 'b');
+	// graph1.addEdge('F', 'C', 1, 'b');
+	// graph1.addEdge('D', 'E', 10, 'b');
+	// graph1.addEdge('E', 'F', 10, 'b');
+	graph1.addEdge('A', 'B', 4, 'a');
+	graph1.addEdge('A', 'C', 3, 'a');
+	graph1.addEdge('A', 'E', 7, 'a');
+	graph1.addEdge('B', 'D', 5, 'a');
+	graph1.addEdge('B', 'C', 6, 'a');
+	graph1.addEdge('C', 'D', 11, 'a');
+	graph1.addEdge('C', 'E', 8, 'a');
+	graph1.addEdge('D', 'E', 2, 'a');
+	graph1.addEdge('D', 'G', 10, 'a');
+	graph1.addEdge('D', 'F', 2, 'a');
+	graph1.addEdge('E', 'G', 5, 'a');
+	graph1.addEdge('G', 'F', 3, 'a');
+
+	graph1.getFastestRoute('A', 'F');
+	// graph1.getFastestRoute('D', 'E');
+	// graph1.getFastestRoute('F', 'D');
 
 	// add our graph to the list
 	graphs.push(graph1);
 
 	// iterate through all of the nodes
 	// in our graph and look for cycles
-	for(var i = 0; i < graphs.length; i++) {
-		if(graphs[i].hasCycles()) {
-			console.log('Infeasible game.');
-		} else {
-			if(graphs[i].isLinear()) {
-				console.log('Linear gameplay.');
-			} else {
-				console.log('Nonlinear gameplay possible.');
-			}
-		}
-	}
+	// for(var i = 0; i < graphs.length; i++) {
+	// 	if(graphs[i].hasCycles()) {
+	// 		console.log('Infeasible game.');
+	// 	} else {
+	// 		if(graphs[i].isLinear()) {
+	// 			console.log('Linear gameplay.');
+	// 		} else {
+	// 			console.log('Nonlinear gameplay possible.');
+	// 		}
+	// 	}
+	// }
 	
 })();
