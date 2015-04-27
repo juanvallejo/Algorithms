@@ -46,7 +46,7 @@ var Graph = require('./modules/Graph.js');
 	var graph1 = new Graph();
 	graph1.setLength(6);
 	graph1.addAllNodes(['A', 'B', 'C', 'D', 'E', 'F', 'G']);
-	graph1.setEdgeLength(7);
+	graph1.setEdgeLength(12); // 7
 	// graph1.addEdge('A', 'B', 10, 'a');
 	// graph1.addEdge('B', 'C', 10, 'a');
 	// graph1.addEdge('D', 'A', 1, 'b');

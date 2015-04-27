@@ -191,75 +191,136 @@ function Graph() {
 	}
 
 	/**
+	 * Sorts an array of integers
+	 * @return object with sorted array and
+	 * array of integers denoting new order
+	 * Warning: does not alter original array.
+	 */
+	this.sortArray = function(array) {
+		
+		var copy 	= [];
+
+		var arrays = {
+			order:[],
+			sort : null
+		}
+
+		for(var i = 0; i < array.length; i++) {
+			copy[i] = array[i];
+		}
+
+		arrays.sort  = this._sortArray(copy, []);
+		arrays.order = [];
+
+		for(var i = 0; i < arrays.sort.length; i++) {
+			arrays.order.push(arrays.sort.indexOf(array[i]));
+		}
+
+		return arrays;
+	}
+
+	/**
+	 * Recursive method for array sorting.
+	 * 
+	 */
+	this._sortArray = function(array, sortedArray) {
+
+		if(!array.length) {
+			return sortedArray;
+		}
+
+		var smallest = array[0];
+		var smallestIndex = 0;
+
+		for(var i = 0; i < array.length; i++) {
+			if(array[i] < smallest) {
+				smallest = array[i];
+				smallestIndex = i;
+			}
+		}
+
+		array.splice(smallestIndex, 1);
+		sortedArray.push(smallest);
+
+		return this._sortArray(array, sortedArray);
+
+	}
+
+	/**
 	 * Gets the route that takes shortest time
 	 * between two nodes. Only node values should
 	 * be specified.
 	 */
 	this.getFastestRoute = function(nodeAValue, nodeBValue) {
-		return this._getFastestRoute(this.nodes[nodeAValue], this.nodes[nodeBValue]);
-	}
 
-	/**
-	 * Recursive method for fastest route. Used for
-	 * traversing all of a node's children. Destination
-	 * holds the node we are looking to get to.
-	 * Route is an edge array containing a series of
-	 * edges that define the fastest path.
-	 */
-	this._getFastestRoute = function(node, destination, route) {
+		var source = this.nodes[nodeAValue];
+		var target = this.nodes[nodeBValue];
 
-		// initialize the array that
-		// will hold our edges
-		if(!route) {
-			route = [];
-		}
+		var queue = [];
+		var visited = {};
+		var targetFound = false;
 
-		// mark node as visited
-		node.visited = true;
+		// set initial distance for root node
+		// source.visited = true;
+		queue.push(source.value);
+		this.nodes[queue[0]].visited = true;
+		this.nodes[queue[0]].rootDistance = 0;
 
-		console.log('Visiting node ' + node.value);
+		while(queue.length) {
 
-		if(node.value == destination.value) {
-			console.log('found this motherfucker');
-			console.log('route');
-			console.log(route);
-			return true;
-		}
+			visited[queue[0]] 				= true;
+			this.nodes[queue[0]].visited 	= true;
 
-		// set the initial node's rootDistance
-		if(node.rootDistance == null) {
-			node.rootDistance = 0;
-		}
+			var distances = [];
+			var sortOrder = [];
 
-		// loop through all of our node's children
-		// and update each node value accordingly
-		// we also use this loop to calculate distances.
-		for(var i = 0; i < node.children.length; i++) {
-			
-			if(node.children[i].rootDistance == null || node.rootDistance + this.getEdge(node.value, node.children[i].value).length < node.children[i].rootDistance) {
-				node.children[i].rootDistance = node.rootDistance + this.getEdge(node.value, node.children[i].value).length;
+			for(var i = 0; i < this.nodes[queue[0]].children.length; i++) {
+				
+				if(!visited[this.nodes[queue[0]].children[i].value]) {
+
+					if(this.nodes[queue[0]].children[i].rootDistance == null || this.nodes[queue[0]].rootDistance + this.getEdge(queue[0], this.nodes[queue[0]].children[i].value).length < this.nodes[queue[0]].children[i].rootDistance) {
+						this.nodes[queue[0]].children[i].rootDistance = this.nodes[queue[0]].rootDistance + this.getEdge(queue[0], this.nodes[queue[0]].children[i].value).length;
+					}
+
+					if(queue.indexOf(this.nodes[queue[0]].children[i].value) == -1) {
+						distances.push(this.nodes[queue[0]].children[i].rootDistance);
+					}
+
+				}
+
 			}
 
-			if(!node.children[i].visited) {
-				route.push(this.getEdge(node.value, node.children[i].value));
-			}
+			sortOrder = this.sortArray(distances).order;
 
-		}
+			// pointers to unvisited & unadded nodes
+			var unvisited = [];
 
-		// visit each of the node's children
-		// right now they are visited in order
-		for(var i = 0; i < node.children.length; i++) {
-			if(!node.children[i].visited) {
-				console.log(node.value + ' -> ' + node.children[i].value + ' -> ' + this.getEdge(node.value, node.children[i].value).length + ' -- ' + node.children[i].rootDistance);
-				if(!this._getFastestRoute(node.children[i], destination, route)) {
-					return false;
-				} else {
-					return true;
+			for(var i = 0; i < this.nodes[queue[0]].children.length; i++) {
+				if(!visited[this.nodes[queue[0]].children[i].value] && queue.indexOf(this.nodes[queue[0]].children[i].value) == -1) {
+
+					if(this.nodes[queue[0]].children[i].value == target.value) {
+						targetFound = this.nodes[queue[0]].children[i];
+						break;
+					}
+
+					unvisited.push(i);
 				}
 			}
+
+			if(targetFound) {
+				break;
+			}
+
+			for(var i = 0; i < unvisited.length; i++) {
+				queue.push(this.nodes[queue[0]].children[unvisited[sortOrder[i]]].value);
+			}
+
+			// remove current item from array
+			queue.splice(0, 1);
+			
 		}
 
-		return false;
+		return targetFound;
 
 	}
 
@@ -296,7 +357,6 @@ function Graph() {
 			return false;
 		}
 		
-		// console.log('Now looking at node ' + node.value + ' -> ' + node.children.length + ' children');
 		this.traversed++;
 
 		node.visited = true;
