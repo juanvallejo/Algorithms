@@ -67,7 +67,7 @@ var Graph = require('./modules/Graph.js');
 	graph1.addEdge('E', 'G', 5, 'a');
 	graph1.addEdge('G', 'F', 3, 'a');
 
-	graph1.getFastestRoute('A', 'F');
+	console.log(graph1.getFastestRoute('A', 'B'));
 	// graph1.getFastestRoute('D', 'E');
 	// graph1.getFastestRoute('F', 'D');
 

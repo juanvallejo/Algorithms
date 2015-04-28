@@ -249,7 +249,7 @@ function Graph() {
 	/**
 	 * Gets the route that takes shortest time
 	 * between two nodes. Only node values should
-	 * be specified.
+	 * be specified. Uses Dijkstra's algorithm.
 	 */
 	this.getFastestRoute = function(nodeAValue, nodeBValue) {
 
@@ -260,8 +260,10 @@ function Graph() {
 		var visited = {};
 		var targetFound = false;
 
+		// set root node for source
+		this.nodes[nodeBValue].root = this.nodes[nodeAValue];
+
 		// set initial distance for root node
-		// source.visited = true;
 		queue.push(source.value);
 		this.nodes[queue[0]].visited = true;
 		this.nodes[queue[0]].rootDistance = 0;
@@ -299,7 +301,7 @@ function Graph() {
 				if(!visited[this.nodes[queue[0]].children[i].value] && queue.indexOf(this.nodes[queue[0]].children[i].value) == -1) {
 
 					if(this.nodes[queue[0]].children[i].value == target.value) {
-						targetFound = this.nodes[queue[0]].children[i];
+						targetFound = true;
 						break;
 					}
 
@@ -320,7 +322,11 @@ function Graph() {
 			
 		}
 
-		return targetFound;
+		return {
+			sourceNode 	: this.nodes[nodeAValue],
+			targetNode 	: this.nodes[nodeBValue],
+			distance 	: this.nodes[nodeBValue].rootDistance
+		};
 
 	}
 
@@ -420,7 +426,7 @@ function Graph() {
 	 */
 	this.getEdgeData = function() {
 
-		var edgeData = "";
+		var edgeData = '';
 
 		for(var i in this.edges) {
 			edgeData += this.edges[i].nodeA.value + ' -> ' + this.edges[i].nodeB.value + ', ' + this.edges[i].length + 'km. [' + this.edges[i].type + ']\n'; 

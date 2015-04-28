@@ -21,6 +21,7 @@ function Node(value) {
 	// all of the nodes this node links to.
 	this.children 	= [];
 	this.parent 	= null;
+	this.root 		= null;
 
 	// defines the total distance
 	// to this node from a root
