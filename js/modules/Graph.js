@@ -279,11 +279,6 @@ function Graph() {
 		var visited = {};
 		var targetFound = false;
 
-		var last 	= null;
-
-		// set root node for source
-		this.nodes[nodeBValue].root = this.nodes[nodeAValue];
-
 		// set initial distance for root node
 		queue.push(source.value);
 		this.nodes[queue[0]].visited = true;
@@ -292,14 +287,6 @@ function Graph() {
 		while(queue.length) {
 
 			var current = this.getSmallestNodeFromValues(queue).value || queue[0];
-
-			// // update autobahn distance
-			// if(last && this.getEdge(last, current)) {
-			// 	console.log('updating that dank shit between ' + last + ' and ' + current);
-			// 	console.log(this.getEdge(last, current).type);
-			// 	// this.nodes[current].distances[1] = this.nodes[current].distances[1] + this.getEdge(last, current).length;
-			// }
-
 
 			visited[current] 				= true;
 			this.nodes[current].visited 	= true;
@@ -357,8 +344,6 @@ function Graph() {
 			for(var i = 0; i < unvisited.length; i++) {
 				queue.push(this.nodes[current].children[unvisited[sortOrder[i]]].value);
 			}
-
-			last = current;
 
 			// remove current item from array
 			queue.splice(queue.indexOf(current), 1);

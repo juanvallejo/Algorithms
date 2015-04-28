@@ -64,6 +64,6 @@ var Graph = require('./modules/Graph.js');
 
 	// console.log(route1.source.value + ' ' + route1.target.value + ' ' + route1.distance);
 	// console.log(route2.source.value + ' ' + route2.target.value + ' ' + route2.distance);
-	console.log(route3.source.value + ' ' + route3.target.value + ' ' + route3.distance + ' ' +route3.autobahn);
+	console.log(route3.source.value + ' ' + route3.target.value + ' ' + route3.distance + ' ' + route3.autobahn);
 
 })();

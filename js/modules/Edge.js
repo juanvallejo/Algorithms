@@ -16,7 +16,7 @@ function Edge(nodeA, nodeB, length, type) {
 	this.nodeB 		= nodeB;
 
 	// length (in km) between the two
-	// connected ndoes
+	// connected nodes
 	this.length		= length;
 
 	// type indicates whether this edge
