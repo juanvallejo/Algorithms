@@ -19,10 +19,6 @@ function Edge(nodeA, nodeB, length, type) {
 	// connected ndoes
 	this.length		= length;
 
-	// total distance from
-	// root node
-	this.distance 	= null;
-
 	// type indicates whether this edge
 	// is a backroad, or an autobahn
 	// segment.

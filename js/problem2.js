@@ -46,46 +46,24 @@ var Graph = require('./modules/Graph.js');
 	var graph1 = new Graph();
 	graph1.setLength(6);
 	graph1.addAllNodes(['A', 'B', 'C', 'D', 'E', 'F', 'G']);
-	graph1.setEdgeLength(12); // 7
-	// graph1.addEdge('A', 'B', 10, 'a');
-	// graph1.addEdge('B', 'C', 10, 'a');
-	// graph1.addEdge('D', 'A', 1, 'b');
-	// graph1.addEdge('E', 'B', 5, 'b');
-	// graph1.addEdge('F', 'C', 1, 'b');
-	// graph1.addEdge('D', 'E', 10, 'b');
-	// graph1.addEdge('E', 'F', 10, 'b');
-	graph1.addEdge('A', 'B', 4, 'a');
-	graph1.addEdge('A', 'C', 3, 'a');
-	graph1.addEdge('A', 'E', 7, 'a');
-	graph1.addEdge('B', 'D', 5, 'a');
-	graph1.addEdge('B', 'C', 6, 'a');
-	graph1.addEdge('C', 'D', 11, 'a');
-	graph1.addEdge('C', 'E', 8, 'a');
-	graph1.addEdge('D', 'E', 2, 'a');
-	graph1.addEdge('D', 'G', 10, 'a');
-	graph1.addEdge('D', 'F', 2, 'a');
-	graph1.addEdge('E', 'G', 5, 'a');
-	graph1.addEdge('G', 'F', 3, 'a');
-
-	console.log(graph1.getFastestRoute('A', 'B'));
-	// graph1.getFastestRoute('D', 'E');
-	// graph1.getFastestRoute('F', 'D');
+	graph1.setEdgeLength(7);
+	graph1.addEdge('A', 'B', 10, 'a');
+	graph1.addEdge('B', 'C', 10, 'a');
+	graph1.addEdge('D', 'A', 1, 'b');
+	graph1.addEdge('E', 'B', 5, 'b');
+	graph1.addEdge('F', 'C', 1, 'b');
+	graph1.addEdge('D', 'E', 10, 'b');
+	graph1.addEdge('E', 'F', 10, 'b');
 
 	// add our graph to the list
 	graphs.push(graph1);
 
-	// iterate through all of the nodes
-	// in our graph and look for cycles
-	// for(var i = 0; i < graphs.length; i++) {
-	// 	if(graphs[i].hasCycles()) {
-	// 		console.log('Infeasible game.');
-	// 	} else {
-	// 		if(graphs[i].isLinear()) {
-	// 			console.log('Linear gameplay.');
-	// 		} else {
-	// 			console.log('Nonlinear gameplay possible.');
-	// 		}
-	// 	}
-	// }
-	
+	// var route1 = graph1.getFastestRoute('A', 'B');
+	// var route2 = graph1.getFastestRoute('D', 'E');
+	var route3 = graph1.getFastestRoute('F', 'D');
+
+	// console.log(route1.source.value + ' ' + route1.target.value + ' ' + route1.distance);
+	// console.log(route2.source.value + ' ' + route2.target.value + ' ' + route2.distance);
+	console.log(route3.source.value + ' ' + route3.target.value + ' ' + route3.distance + ' ' +route3.autobahn);
+
 })();

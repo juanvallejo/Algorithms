@@ -26,7 +26,11 @@ function Node(value) {
 	// defines the total distance
 	// to this node from a root
 	// node. Null value -> infinity
-	this.rootDistance = null;
+	this.rootDistance 	= null;
+
+	// used when there are various
+	// types of edges being considered
+	this.distances 		= [0, 0];
 
 	/**
 	 * Receives a node value and determines if

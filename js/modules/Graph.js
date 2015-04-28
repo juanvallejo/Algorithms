@@ -247,6 +247,25 @@ function Graph() {
 	}
 
 	/**
+	 * Receives an array of node values. Goes through
+	 * the specified nodes in the list and returns the
+	 * node with the smallest value.
+	 */
+	this.getSmallestNodeFromValues = function(list) {
+
+		var smallest = this.nodes[list[0]];
+
+		for(var i = 0; i < list.length; i++) {
+			if(this.nodes[list[i]].rootDistance < smallest.rootDistance) {
+				smallest = this.nodes[list[i]];
+			}
+		}
+
+		return smallest;
+
+	}
+
+	/**
 	 * Gets the route that takes shortest time
 	 * between two nodes. Only node values should
 	 * be specified. Uses Dijkstra's algorithm.
@@ -256,9 +275,11 @@ function Graph() {
 		var source = this.nodes[nodeAValue];
 		var target = this.nodes[nodeBValue];
 
-		var queue = [];
+		var queue 	= [];
 		var visited = {};
 		var targetFound = false;
+
+		var last 	= null;
 
 		// set root node for source
 		this.nodes[nodeBValue].root = this.nodes[nodeAValue];
@@ -270,22 +291,52 @@ function Graph() {
 
 		while(queue.length) {
 
-			visited[queue[0]] 				= true;
-			this.nodes[queue[0]].visited 	= true;
+			var current = this.getSmallestNodeFromValues(queue).value || queue[0];
+
+			// // update autobahn distance
+			// if(last && this.getEdge(last, current)) {
+			// 	console.log('updating that dank shit between ' + last + ' and ' + current);
+			// 	console.log(this.getEdge(last, current).type);
+			// 	// this.nodes[current].distances[1] = this.nodes[current].distances[1] + this.getEdge(last, current).length;
+			// }
+
+
+			visited[current] 				= true;
+			this.nodes[current].visited 	= true;
 
 			var distances = [];
 			var sortOrder = [];
 
-			for(var i = 0; i < this.nodes[queue[0]].children.length; i++) {
+			for(var i = 0; i < this.nodes[current].children.length; i++) {
 				
-				if(!visited[this.nodes[queue[0]].children[i].value]) {
+				if(!visited[this.nodes[current].children[i].value]) {
 
-					if(this.nodes[queue[0]].children[i].rootDistance == null || this.nodes[queue[0]].rootDistance + this.getEdge(queue[0], this.nodes[queue[0]].children[i].value).length < this.nodes[queue[0]].children[i].rootDistance) {
-						this.nodes[queue[0]].children[i].rootDistance = this.nodes[queue[0]].rootDistance + this.getEdge(queue[0], this.nodes[queue[0]].children[i].value).length;
+					var edgeLength = this.getEdge(current, this.nodes[current].children[i].value).length;
+
+					if(this.getEdge(current, this.nodes[current].children[i].value).type == 'a') {
+						edgeLength /= 160;
+					} else {
+						edgeLength /= 80;
 					}
 
-					if(queue.indexOf(this.nodes[queue[0]].children[i].value) == -1) {
-						distances.push(this.nodes[queue[0]].children[i].rootDistance);
+					if(this.nodes[current].children[i].rootDistance == null || this.nodes[current].rootDistance + edgeLength < this.nodes[current].children[i].rootDistance) {
+
+						this.nodes[current].children[i].rootDistance = this.nodes[current].rootDistance + edgeLength;
+						this.nodes[current].children[i].distances[0] = this.nodes[current].distances[0] + this.getEdge(current, this.nodes[current].children[i].value).length;
+
+						if(this.getEdge(current, this.nodes[current].children[i].value).type == 'a') {
+							// console.log('updating autobahn distance for ' + this.nodes[current].children[i].value + ' to ' + (this.nodes[current].distances[1] + this.getEdge(current, this.nodes[current].children[i].value).length));
+							this.nodes[current].children[i].distances[1] = this.nodes[current].distances[1] + this.getEdge(current, this.nodes[current].children[i].value).length;
+						} else {
+							if(this.nodes[current].distances[1] > this.nodes[current].children[i].distances[1]) {
+								this.nodes[current].children[i].distances[1] = this.nodes[current].distances[1];
+							}
+						}
+
+					}
+
+					if(queue.indexOf(this.nodes[current].children[i].value) == -1) {
+						distances.push(this.nodes[current].children[i].rootDistance);
 					}
 
 				}
@@ -297,35 +348,28 @@ function Graph() {
 			// pointers to unvisited & unadded nodes
 			var unvisited = [];
 
-			for(var i = 0; i < this.nodes[queue[0]].children.length; i++) {
-				if(!visited[this.nodes[queue[0]].children[i].value] && queue.indexOf(this.nodes[queue[0]].children[i].value) == -1) {
-
-					if(this.nodes[queue[0]].children[i].value == target.value) {
-						targetFound = true;
-						break;
-					}
-
+			for(var i = 0; i < this.nodes[current].children.length; i++) {
+				if(!visited[this.nodes[current].children[i].value] && queue.indexOf(this.nodes[current].children[i].value) == -1) {
 					unvisited.push(i);
 				}
 			}
 
-			if(targetFound) {
-				break;
+			for(var i = 0; i < unvisited.length; i++) {
+				queue.push(this.nodes[current].children[unvisited[sortOrder[i]]].value);
 			}
 
-			for(var i = 0; i < unvisited.length; i++) {
-				queue.push(this.nodes[queue[0]].children[unvisited[sortOrder[i]]].value);
-			}
+			last = current;
 
 			// remove current item from array
-			queue.splice(0, 1);
-			
+			queue.splice(queue.indexOf(current), 1);
+
 		}
 
 		return {
-			sourceNode 	: this.nodes[nodeAValue],
-			targetNode 	: this.nodes[nodeBValue],
-			distance 	: this.nodes[nodeBValue].rootDistance
+			source 		: this.nodes[nodeAValue],
+			target 		: this.nodes[nodeBValue],
+			autobahn 	: this.nodes[nodeBValue].distances[1],
+			distance 	: this.nodes[nodeBValue].distances[0],
 		};
 
 	}
